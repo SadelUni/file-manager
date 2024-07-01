@@ -19,5 +19,3 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
-
-console.log(`Firebase storage bucket: ${storage.app.options.storageBucket}`);

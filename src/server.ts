@@ -80,7 +80,7 @@ export class Server {
 		this.routes.use(ErrorMiddleware.handleError);
 
 		this.serverListener = this.app.listen(this.port, () => {
-			console.log(`Server running on port ${this.port}... ${this.apiPrefix}`);
+			console.log(`Server running on port ${this.port}...`);
 		});
 	}
 

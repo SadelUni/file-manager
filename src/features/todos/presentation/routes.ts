@@ -1,7 +1,7 @@
 // src\features\todos\presentation\routes.ts
 
 import { Router } from 'express';
-
+import multer from 'multer';
 import { TodoDatasourceImpl, TodoRepositoryImpl } from '../infraestructure';
 import { TodoController } from './controller';
 import { AuthDatasourceImpl, AuthMiddleware, AuthRepositoryImpl } from '../../auth';
@@ -9,6 +9,8 @@ import { AuthDatasourceImpl, AuthMiddleware, AuthRepositoryImpl } from '../../au
 export class TodoRoutes {
 	static get routes(): Router {
 		const router = Router();
+		const storageMulter = multer.memoryStorage();
+		const upload = multer({ storage: storageMulter });
 
 		//* This datasource can be change
 		const datasource = new TodoDatasourceImpl();
@@ -25,7 +27,7 @@ export class TodoRoutes {
 		router.post('/', [authMiddleware.validateJWT], controller.create);
 		router.put('/:id', controller.update);
 		router.delete('/:id', controller.delete);
-		router.post('/firebase', controller.uploadFileToFirebase)
+		router.post('/firebase', [upload.single('file')], controller.uploadFileToFirebase);
 
 		// rest of operations
 		// ...

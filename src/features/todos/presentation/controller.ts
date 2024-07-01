@@ -4,6 +4,7 @@ import { type NextFunction, type Request, type Response } from 'express';
 
 import { type SuccessResponse, HttpCode, ONE, TEN } from '../../../core';
 import { PaginationDto, type PaginationResponseEntity } from '../../shared';
+import { UploadFileToServer } from '../../../core/constants/helpers/uploadFile';
 
 import {
 	CreateTodo,
@@ -30,6 +31,10 @@ interface RequestBody {
 interface RequestQuery {
 	page: string;
 	limit: string;
+}
+
+export interface MulterRequest extends Request {
+	file: Express.Multer.File;
 }
 
 export class TodoController {
@@ -97,16 +102,20 @@ export class TodoController {
 	};
 
 	public uploadFileToFirebase = async (
-		req: Request<unknown, unknown, unknown, unknown, { file: unknown }>,
-		res: Response<SuccessResponse<{ ref: any; url: string }>>,
+		req: MulterRequest,
+		res: Response<SuccessResponse<{ ref: string; url: string }>>,
 		next: NextFunction
 	): Promise<void> => {
-		const { file } = req;
+		const file = req.file;
+		if (!file) {
+			next(new Error('No file found'));
+		}
+
 		try {
-			const { UploadFileToServer } = await import('../../../core/constants/helpers/uploadFile');
-			const result = await UploadFileToServer(file);
-			res.json({ data: result });
+			const { ref, url } = await UploadFileToServer(file);
+			res.json({ data: { ref: ref.fullPath, url } });
 		} catch (error) {
+			console.log('error', error);
 			next(error);
 		}
 	};

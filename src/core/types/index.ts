@@ -13,3 +13,12 @@ export interface ErrorResponse {
 	validationErrors?: ValidationType[];
 	stack?: string;
 }
+
+export interface FileUploadToServer {
+	originalname: string;
+	buffer: Buffer;
+	mimetype: string;
+	fieldname: string;
+	encoding: string;
+	size: number;
+}
